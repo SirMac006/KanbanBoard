@@ -16,17 +16,19 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Access Denied: No Token Provided' });
+    res.status(401).json({ message: 'Access Denied: No Token Provided' });
+    return; // Ensure the function returns void
   }
 
   // Verify the token
   jwt.verify(token, jwtSecret, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid Token' });
+      res.status(403).json({ message: 'Invalid Token' });
+      return; // Ensure the function returns void
     }
 
     // Attach the user to the request object (casting to any to avoid TypeScript errors)
     (req as any).user = user as JwtPayload;
-    next();
+    next(); // Call the next middleware or route handler
   });
 };
